@@ -34,7 +34,6 @@ def change_client(conn, name, first_name=None, email=None, phones=None):
     conn.commit()
 
 
-
 def add_phone(conn, client_id, phone):
     pass
 
