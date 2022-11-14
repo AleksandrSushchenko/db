@@ -29,8 +29,6 @@ def change_client(conn, name, first_name=None, email=None, phones=None):
     pass
 
 
-def add_phone(conn, client_id, phone):
-    pass
 
 def delete_phone(conn, client_id, phone):
     pass
@@ -42,7 +40,6 @@ def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
     pass
 
 def add_client(conn, name, first_name, email, tel):
-
     with conn.cursor() as cur:
         cur.execute("""
         insert into user_guide (name, firstname, email)
@@ -56,14 +53,25 @@ def add_client(conn, name, first_name, email, tel):
         """, (tel, id_user,))
     conn.commit()
 
+def add_tel(conn, client_id, phone):
+    with conn.cursor() as cur:
+        cur.execute("""
+        select id from user_guide
+        where id=%s
+        """, (client_id))
+        print(cur.fetchone)
+        x = phone
+
+    conn.commit()
+
 
 
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
     create_db(conn)
-
     add_client(conn, 'Alex', 'sokolov', '1@gmail.com', '7-962-264-0202')
     add_client(conn, 'Petr', 'sokolov', '2gmail.com', '8-666-698-8827')
     add_client(conn, 'Ivan', 'Petrov', '3gmail.com', '8-466-668-1484')
+    add_tel(conn, '2', '1')
 
 conn.close()
 
