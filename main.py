@@ -18,7 +18,7 @@ def create_db(conn):
         cur.execute("""
             CREATE TABLE IF NOT EXISTS "tel"(
             "id_tel" int generated always as identity (increment 1 start 1 minvalue 1 maxvalue 2147483647 cache 1) PRIMARY KEY,
-            "tel" int,
+            "tel" varchar(20),
             "id_user" int REFERENCES user_guide(id) 
             );
         """)
@@ -41,20 +41,19 @@ def delete_client(conn, client_id):
 def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
     pass
 
-def add_client(conn, name, first_name, email, tel: int):
+def add_client(conn, name, first_name, email, tel):
+
     with conn.cursor() as cur:
         cur.execute("""
         insert into user_guide (name, firstname, email)
         values (%s, %s, %s) returning id
         """, (name, first_name, email,))
         id_client = cur.fetchone()
-        id_user = int(id_client[0])
-
+        id_user = id_client[0]
         cur.execute("""
         insert into tel (tel, id_user)
         values (%s, %s)
-        """ (tel, id_user, ))
-
+        """, (tel, id_user,))
     conn.commit()
 
 
@@ -62,22 +61,9 @@ def add_client(conn, name, first_name, email, tel: int):
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
     create_db(conn)
 
-    add_client(conn, 'Alex', 'sokolov', '1@gmail.com', 444444)
-    add_client(conn, 'Petr', 'sokolov', '2gmail.com', 988827)
-    add_client(conn, 'Ivan', 'Petrov', '3gmail.com', 8484848484)
-
-    # name = 'Petr'
-    # first_name = 'Ivanov'
-    # email = '1@gmail.com'
-    # with conn.cursor() as cur:
-    #     cur.execute("""
-    #     insert into user_guide (name, firstname, email)
-    #     values (%s, %s, %s)
-    #     """, (name, first_name, email))
-    # conn.commit()
-
-
-
+    add_client(conn, 'Alex', 'sokolov', '1@gmail.com', '7-962-264-0202')
+    add_client(conn, 'Petr', 'sokolov', '2gmail.com', '8-666-698-8827')
+    add_client(conn, 'Ivan', 'Petrov', '3gmail.com', '8-466-668-1484')
 
 conn.close()
 
