@@ -26,12 +26,7 @@ def create_db(conn):
 
 
 def change_client(conn, name, first_name=None, email=None, phones=None):
-    with conn.cursor() as cur:
-        cur.execute("""
-        INSERT INTO user_guide (name, firstname, email)
-        VALUES (%s, %s, $s)
-        """, (name,first_name,email,))
-    conn.commit()
+    pass
 
 
 def add_phone(conn, client_id, phone):
@@ -46,10 +41,41 @@ def delete_client(conn, client_id):
 def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
     pass
 
+def add_client(conn, name, first_name, email, tel: int):
+    with conn.cursor() as cur:
+        cur.execute("""
+        insert into user_guide (name, firstname, email)
+        values (%s, %s, %s) returning id
+        """, (name, first_name, email,))
+        id_client = cur.fetchone()
+        id_user = int(id_client[0])
+
+        cur.execute("""
+        insert into tel (tel, id_user)
+        values (%s, %s)
+        """ (tel, id_user, ))
+
+    conn.commit()
+
+
 
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
     create_db(conn)
-    change_client(conn, 'Petr', 'Ivanov', '1@gmail.com')
+
+    add_client(conn, 'Alex', 'sokolov', '1@gmail.com', 444444)
+    add_client(conn, 'Petr', 'sokolov', '2gmail.com', 988827)
+    add_client(conn, 'Ivan', 'Petrov', '3gmail.com', 8484848484)
+
+    # name = 'Petr'
+    # first_name = 'Ivanov'
+    # email = '1@gmail.com'
+    # with conn.cursor() as cur:
+    #     cur.execute("""
+    #     insert into user_guide (name, firstname, email)
+    #     values (%s, %s, %s)
+    #     """, (name, first_name, email))
+    # conn.commit()
+
 
 
 
