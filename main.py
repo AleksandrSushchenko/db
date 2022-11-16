@@ -56,12 +56,18 @@ def add_client(conn, name, first_name, email, tel):
 def add_tel(conn, client_id, phone):
     with conn.cursor() as cur:
         cur.execute("""
-        select id from user_guide
-        where id=%s
+        select id from user_guide where id = %s
         """, (client_id,))
-        print(cur.fetchone)
-        x = phone
-
+        client_id = cur.fetchone()
+        if client_id == None:
+            print("Пользователя с таким id несуществует!")
+        else:
+            user_id = client_id[0]
+            cur.execute("""
+            insert into tel (tel, id_user)
+            values (%s, %s)
+            """, (phone, user_id,))
+            print("Телефон добавлен")
     conn.commit()
 
 
@@ -71,7 +77,9 @@ with psycopg2.connect(database="guide", user="postgres", password="1109") as con
     add_client(conn, 'Alex', 'sokolov', '1@gmail.com', '7-962-264-0202')
     add_client(conn, 'Petr', 'sokolov', '2gmail.com', '8-666-698-8827')
     add_client(conn, 'Ivan', 'Petrov', '3gmail.com', '8-466-668-1484')
-    add_tel(conn, '1', '2')
+    add_tel(conn, 2, '8-211-444-4444')
+    add_tel(conn, 8, '8-211-333-4444')
+
 
 conn.close()
 
