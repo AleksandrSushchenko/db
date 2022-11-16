@@ -25,10 +25,6 @@ def create_db(conn):
     conn.commit()
 
 
-def change_client(conn, name, first_name=None, email=None, phones=None):
-    pass
-
-
 
 def delete_phone(conn, client_id, phone):
     pass
@@ -70,6 +66,39 @@ def add_tel(conn, client_id, phone):
             print("Телефон добавлен")
     conn.commit()
 
+def change_client(conn, name, first_name=None, email=None, phones=None):
+    with conn.cursor() as cur:
+        cur.execute("""
+        select name from user_guide where name=%s  
+        """, (name,))
+        client_name = cur.fetchone()
+        user_name = client_name[0]
+        cur.execute("""
+        select id from user_guide where name=%s
+        """, (name,))
+        client_id = cur.fetchone()
+        user_id = client_id[0]
+        if client_name == None:
+            print('Пользователя с таким именем несуществует!')
+        else:
+            if first_name is not None:
+                cur.execute("""
+                update user_guide set firstname = %s where name = %s
+                """, (first_name, user_name,))
+                print('Фамиля изменена')
+            if email is not None:
+                cur.execute("""
+                update user_guide set email = %s where name = %s
+                """,(email, user_name,))
+                print('Почта изменена')
+            if phones is not None:
+                cur.execute("""
+                update tel set tel = %s where id_user =%s
+                """, (phones, user_id,))
+                print('Телефон изменен')
+    conn.commit()
+
+
 
 
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
@@ -78,7 +107,7 @@ with psycopg2.connect(database="guide", user="postgres", password="1109") as con
     add_client(conn, 'Petr', 'sokolov', '2gmail.com', '8-666-698-8827')
     add_client(conn, 'Ivan', 'Petrov', '3gmail.com', '8-466-668-1484')
     add_tel(conn, 2, '8-211-444-4444')
-    add_tel(conn, 8, '8-211-333-4444')
+    change_client(conn, 'Ivan2', 'IVANOV', '33333333@mail.com', '8-333-333-3333')
 
 
 conn.close()
