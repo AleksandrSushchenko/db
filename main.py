@@ -58,7 +58,7 @@ def add_tel(conn, client_id, phone):
         cur.execute("""
         select id from user_guide
         where id=%s
-        """, (client_id))
+        """, (client_id,))
         print(cur.fetchone)
         x = phone
 
@@ -71,7 +71,7 @@ with psycopg2.connect(database="guide", user="postgres", password="1109") as con
     add_client(conn, 'Alex', 'sokolov', '1@gmail.com', '7-962-264-0202')
     add_client(conn, 'Petr', 'sokolov', '2gmail.com', '8-666-698-8827')
     add_client(conn, 'Ivan', 'Petrov', '3gmail.com', '8-466-668-1484')
-    add_tel(conn, '2', '1')
+    add_tel(conn, '1', '2')
 
 conn.close()
 
