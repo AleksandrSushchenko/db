@@ -1,5 +1,6 @@
 import psycopg2
 
+
 def create_db(conn):
     with conn.cursor() as cur:
         cur.execute("""
@@ -25,11 +26,6 @@ def create_db(conn):
     conn.commit()
 
 
-
-
-
-
-
 def add_client(conn, name, first_name, email, tel):
     with conn.cursor() as cur:
         cur.execute("""
@@ -44,13 +40,14 @@ def add_client(conn, name, first_name, email, tel):
         """, (tel, id_user,))
     conn.commit()
 
+
 def add_tel(conn, client_id, phone):
     with conn.cursor() as cur:
         cur.execute("""
         select id from user_guide where id = %s
         """, (client_id,))
         client_id = cur.fetchone()
-        if client_id == None:
+        if client_id is None:
             print("Пользователя с таким id несуществует!")
         else:
             user_id = client_id[0]
@@ -61,6 +58,7 @@ def add_tel(conn, client_id, phone):
             print("Телефон добавлен")
     conn.commit()
 
+
 def change_client(conn, name, first_name=None, email=None, phones=None):
     with conn.cursor() as cur:
         cur.execute("""
@@ -69,7 +67,7 @@ def change_client(conn, name, first_name=None, email=None, phones=None):
 
         client_name = cur.fetchone()
 
-        if client_name == None:
+        if client_name is None:
             print('Пользователя с таким именем несуществует!')
         else:
             user_name = client_name[0]
@@ -97,12 +95,14 @@ def change_client(conn, name, first_name=None, email=None, phones=None):
                 print(f'Телефон у {user_name} изменен')
     conn.commit()
 
+
 def delete_phone(conn, id_user, tel):
     with conn.cursor() as cur:
         cur.execute("""
         delete from tel where id_user=%s and tel = %s
         """, (id_user, tel))
     conn.commit()
+
 
 def delete_client(conn, client_id):
     with conn.cursor() as cur:
@@ -127,6 +127,7 @@ def find_client(conn, name=None, first_name=None, email=None, phone=None):
         print(cur.fetchall())
     conn.commit()
 
+
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
     create_db(conn)
     add_client(conn, 'Alex', 'sokolov', '1@gmail.com', '7-962-264-0202')
@@ -139,9 +140,4 @@ with psycopg2.connect(database="guide", user="postgres", password="1109") as con
     delete_client(conn, '1')
     find_client(conn, 'Petr')
 
-
 conn.close()
-
-
-
-
