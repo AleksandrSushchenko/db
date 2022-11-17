@@ -26,8 +26,7 @@ def create_db(conn):
 
 
 
-def delete_phone(conn, client_id, phone):
-    pass
+
 
 def delete_client(conn, client_id):
     pass
@@ -82,12 +81,12 @@ def change_client(conn, name, first_name=None, email=None, phones=None):
                 cur.execute("""
                 update user_guide set firstname = %s where name = %s
                 """, (first_name, user_name,))
-                print('Фамиля изменена')
+                print(f'Фамиля у {user_name} изменена')
             if email is not None:
                 cur.execute("""
                 update user_guide set email = %s where name = %s
                 """,(email, user_name,))
-                print('Почта изменена')
+                print(f'Почта у {user_name} изменена')
             if phones is not None:
                 cur.execute("""
                 select id from user_guide where name=%s
@@ -99,9 +98,16 @@ def change_client(conn, name, first_name=None, email=None, phones=None):
                 cur.execute("""
                 update tel set tel = %s where id_user =%s
                  """, (phones, user_id,))
-                print('Телефон изменен')
+                print(f'Телефон у {user_name} изменен')
     conn.commit()
 
+def delete_phone(conn, id_user, tel):
+    with conn.cursor() as cur:
+        cur.execute("""
+        delete from tel where id_user=%s and tel = %s
+        """, (id_user, tel))
+
+    conn.commit()
 
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
     create_db(conn)
@@ -111,6 +117,7 @@ with psycopg2.connect(database="guide", user="postgres", password="1109") as con
     add_tel(conn, 2, '8-211-444-4444')
     change_client(conn, 'Ivan', 'IVANOV', '33333333@mail.com', '8-888-888-8888')
     change_client(conn, 'Petr', 'Petrov')
+    delete_phone(conn, '3', '8-888-888-8888')
 
 
 conn.close()
