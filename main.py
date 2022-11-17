@@ -29,8 +29,6 @@ def create_db(conn):
 
 
 
-def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
-    pass
 
 def add_client(conn, name, first_name, email, tel):
     with conn.cursor() as cur:
@@ -118,6 +116,17 @@ def delete_client(conn, client_id):
     conn.commit()
 
 
+def find_client(conn, name=None, first_name=None, email=None, phone=None):
+    with conn.cursor() as cur:
+        cur.execute("""
+        select user_guide, tel 
+        from user_guide join tel
+        on user_guide.name  = %s  or user_guide.firstname = %s or user_guide.email = %s or tel.tel = %s
+        group by user_guide.id, tel.tel 
+        """, (name, first_name, email, phone,))
+        print(cur.fetchall())
+    conn.commit()
+
 with psycopg2.connect(database="guide", user="postgres", password="1109") as conn:
     create_db(conn)
     add_client(conn, 'Alex', 'sokolov', '1@gmail.com', '7-962-264-0202')
@@ -128,6 +137,7 @@ with psycopg2.connect(database="guide", user="postgres", password="1109") as con
     change_client(conn, 'Petr', 'Petrov')
     delete_phone(conn, '3', '8-888-888-8888')
     delete_client(conn, '1')
+    find_client(conn, 'Petr')
 
 
 conn.close()
